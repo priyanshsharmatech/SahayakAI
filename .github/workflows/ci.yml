@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # The repo installs with legacy peer deps.
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      # vitest@5 has a REQUIRED peer dependency on `vite` that is not pinned in
+      # package.json / package-lock.json. Install it here (without mutating the
+      # manifest or lockfile) so the test runner can start. If `vite` is later
+      # added to devDependencies, this step can be removed.
+      - name: Install vitest's vite peer
+        run: npm install vite@^7 --no-save --legacy-peer-deps
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Unit tests
+        run: npx vitest run
+
+      # Note: `next build` is intentionally NOT run here — it requires
+      # runtime env vars / secrets (DB, mail, API keys) and is run separately
+      # in the deploy pipeline.

@@ -1,8 +1,10 @@
-import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { destroySession } from "@/lib/session";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
-  const cookieStore = await cookies();
-  cookieStore.delete("access_token");
-  return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}`);
+// POST-only: a GET logout is CSRF-triggerable (a stray <img>/link could log the
+// user out) and the old redirect crashed when NEXT_PUBLIC_APP_URL was unset.
+// Callers POST and handle navigation client-side.
+export async function POST() {
+  await destroySession();
+  return NextResponse.json({ ok: true });
 }

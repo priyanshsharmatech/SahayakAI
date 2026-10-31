@@ -1,1 +1,125 @@
 @import "tailwindcss";
+
+/* Class-based dark mode: `dark:` variants apply when an ancestor has .dark */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+}
+
+/* Smooth in-page anchor scrolling (e.g. homepage nav → #features/#how). */
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+.dark {
+  color-scheme: dark;
+}
+
+body {
+  background-color: #fafafa;
+  color: #18181b;
+}
+.dark body {
+  background-color: #09090b;
+  color: #f4f4f5;
+}
+
+/* Modern thin scrollbar for scrollable panels (tables, lists). */
+.sleek-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(161, 161, 170, 0.5) transparent; /* zinc-400 */
+}
+.sleek-scroll::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.sleek-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sleek-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(161, 161, 170, 0.45);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.sleek-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(113, 113, 122, 0.7); /* zinc-500 */
+}
+.dark .sleek-scroll {
+  scrollbar-color: rgba(113, 113, 122, 0.6) transparent;
+}
+.dark .sleek-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(82, 82, 91, 0.7); /* zinc-600 */
+  background-clip: content-box;
+  border: 2px solid transparent;
+}
+.dark .sleek-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(113, 113, 122, 0.9);
+}
+
+/* ------------------------------------------------------------------ */
+/* Animated theme switch — View Transitions API (angled clip-path wipe) */
+/* ------------------------------------------------------------------ */
+
+/* Registered custom props + easing system used by the transition. */
+@property --angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+:root {
+  --duration: 0.4s;
+  --expo-in: linear(
+    0 0%, 0.0085 31.26%, 0.0167 40.94%,
+    0.0289 48.86%, 0.0471 55.92%,
+    0.0717 61.99%, 0.1038 67.32%,
+    0.1443 72.07%, 0.1989 76.7%,
+    0.2659 80.89%, 0.3465 84.71%,
+    0.4419 88.22%, 0.554 91.48%,
+    0.6835 94.51%, 0.8316 97.34%, 1 100%
+  );
+  --expo-out: linear(
+    0 0%, 0.1684 2.66%, 0.3165 5.49%,
+    0.446 8.52%, 0.5581 11.78%,
+    0.6535 15.29%, 0.7341 19.11%,
+    0.8011 23.3%, 0.8557 27.93%,
+    0.8962 32.68%, 0.9283 38.01%,
+    0.9529 44.08%, 0.9711 51.14%,
+    0.9833 59.06%, 0.9915 68.74%, 1 100%
+  );
+  --bounce-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --elastic-out: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* The new (incoming) theme sweeps down over the old one from top to bottom. */
+::view-transition-new(root) {
+  animation: sweep-bottom var(--duration) var(--expo-out) forwards;
+}
+::view-transition-old(root) {
+  animation: none;
+  z-index: -1;
+}
+
+@keyframes sweep-bottom {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Respect reduced-motion: skip the wipe entirely. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(root),
+  ::view-transition-new(root),
+  ::view-transition-old(root) {
+    animation: none !important;
+  }
+}

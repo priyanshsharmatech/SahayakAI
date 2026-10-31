@@ -1,13 +1,15 @@
 import HomeClient from "@/components/HomeClient";
-import { getSession } from "@/lib/getSession";
+import { getSessionUser } from "@/lib/session";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const session = await getSession();
-  console.log(session);
+  const user = await getSessionUser();
 
   return (
-    <>
-      <HomeClient email={session?.user?.email ?? ""} />
-    </>
+    <HomeClient
+      email={user?.email ?? ""}
+      isAdmin={user?.role === "superadmin"}
+    />
   );
 }
