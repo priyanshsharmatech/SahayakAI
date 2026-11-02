@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Sahayak AI — AI customer support for your website",
+    default: "Sahayak AI",
     template: "%s · Sahayak AI",
   },
   description:
